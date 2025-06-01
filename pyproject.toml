@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "datacore"
+version = "0.1.0"
+description = "A comprehensive data handling library for trade science and market data processing"
+authors = [
+    {name = "Trade Science Team", email = "dev@tradescience.com"},
+]
+requires-python = ">=3.13"
+
+dependencies = [
+    "sqlalchemy>=2.0.0",
+    "pydantic>=2.0.0",
+    "pyyaml",
+    "pyodbc"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+datacore = ["config/*.yaml"] 

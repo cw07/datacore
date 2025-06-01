@@ -1,0 +1,100 @@
+databases:
+  # Meta database for reference data and system configuration
+  meta:
+    host: localhost
+    port: 5432
+    user: postgres
+    password: ${meta_db_conn}  # Airflow connection ID
+    name: meta
+
+  # Market data databases
+  mktdata_01:
+    host: localhost
+    port: 5432
+    user: postgres
+    password: ${mktdata_01_conn}  # Airflow connection ID
+    name: mktdata_01
+
+  mktdata_02:
+    host: localhost
+    port: 5432
+    user: postgres
+    password: ${mktdata_02_conn}  # Airflow connection ID
+    name: mktdata_02
+
+  # Historical data databases
+  histdata_01:
+    host: localhost
+    port: 5432
+    user: postgres
+    password: ${histdata_01_conn}  # Airflow connection ID
+    name: histdata_01
+
+  histdata_02:
+    host: localhost
+    port: 5432
+    user: postgres
+    password: ${histdata_02_conn}  # Airflow connection ID
+    name: histdata_02
+
+  # Analytics databases
+  analytics_01:
+    host: localhost
+    port: 5432
+    user: postgres
+    password: ${analytics_01_conn}  # Airflow connection ID
+    name: analytics_01
+
+  analytics_02:
+    host: localhost
+    port: 5432
+    user: postgres
+    password: ${analytics_02_conn}  # Airflow connection ID
+    name: analytics_02
+
+schemas:
+  # Meta database schemas
+  meta:
+    radar: radar
+    refdata: refdata
+    system: system
+    audit: audit
+
+  # Market data schemas
+  mktdata_01:
+    public: public
+    raw: raw
+    processed: processed
+    derived: derived
+
+  mktdata_02:
+    public: public
+    raw: raw
+    processed: processed
+    derived: derived
+
+  # Historical data schemas
+  histdata_01:
+    public: public
+    daily: daily
+    intraday: intraday
+    tick: tick
+
+  histdata_02:
+    public: public
+    daily: daily
+    intraday: intraday
+    tick: tick
+
+  # Analytics schemas
+  analytics_01:
+    public: public
+    models: models
+    results: results
+    reports: reports
+
+  analytics_02:
+    public: public
+    models: models
+    results: results
+    reports: reports 
