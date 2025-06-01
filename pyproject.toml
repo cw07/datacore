@@ -5,9 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "datacore"
 version = "0.1.0"
-description = "A comprehensive data handling library for trade science and market data processing"
+description = "A core library for data models"
 authors = [
-    {name = "Trade Science Team", email = "dev@tradescience.com"},
+    {name = "cw"},
 ]
 requires-python = ">=3.13"
 
