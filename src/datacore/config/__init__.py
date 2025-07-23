@@ -1,0 +1,5 @@
+"""Database"""
+CHRONO_STR_PROD = ''
+CHRONO_STR_UAT = ''
+TIME_LENS_STR_PROD = ''
+TIME_LENS_STR_UAT = ''
