@@ -133,3 +133,5 @@ dumpy.json
 # IntelliJ
 .idea/
 .idea/inspectionProfiles
+
+uv.lock

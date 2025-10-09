@@ -1,7 +1,7 @@
 from enum import StrEnum
 from abc import ABC
-from datacore.model.security import BaseSecurity
-from datacore.model.execution.algo import BaseExecutionAlgo
+from ...models.assets import AssetType
+from ...models.execution.algo import BaseExecutionAlgo
 
 
 
@@ -46,13 +46,13 @@ class OrderType(StrEnum):
 
 
 class BaseOrder(ABC):
-    """Base order model representing a financial order."""
+    """Base order models representing a financial order."""
     order_id: str
     ticker: str
     side: OrderSide
     quantity: float
     order_type: OrderType
-    security_type: BaseSecurity
+    security_type: AssetType
     id_type: str
     price: float
     exec_algo: BaseExecutionAlgo
