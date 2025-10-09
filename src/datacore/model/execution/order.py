@@ -1,6 +1,6 @@
 from enum import StrEnum
-from abc import ABC, abstractmethod
-from datacore.model.finance.security import BaseSecurity
+from abc import ABC
+from datacore.model.security import BaseSecurity
 from datacore.model.execution.algo import BaseExecutionAlgo
 
 
