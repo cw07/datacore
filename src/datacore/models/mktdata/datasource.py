@@ -5,5 +5,5 @@ class DataSource(StrEnum):
     """Data source types"""
     DataBento = "databento"
     BBG = "bbg"
-    InfluxDB = "influx"
+    Onyx = "onyx"
     Sparta = "sparta"
