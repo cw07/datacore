@@ -58,6 +58,7 @@ class MarketByPrice1(BaseMarketData):
     bid_px_00: Optional[float] = None  # Bid price at the top level.
     bid_sz_00: Optional[int] = None  # Bid size at the top level.
     bid_ct_00: Optional[int] = None  # Number of bid orders at the top level.
+    mid_px_00: Optional[float] = None
     ask_px_00: Optional[float] = None  # Ask price at the top level.
     ask_sz_00: Optional[int] = None  # Ask size at the top level.
     ask_ct_00: Optional[int] = None  # Number of ask orders at the top level.
