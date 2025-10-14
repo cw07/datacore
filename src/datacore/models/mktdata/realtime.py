@@ -2,8 +2,9 @@ from enum import StrEnum
 from typing import Optional
 from dataclasses import dataclass, fields
 
-from ..assets import AssetType
-from ..order import OrderSide, OrderAction
+from datacore.models.mktdata.base import BaseMarketData
+from datacore.models.assets import AssetType
+from datacore.models.order import OrderSide, OrderAction
 
 
 class RealtimeSchema(StrEnum):
@@ -26,7 +27,7 @@ class RealtimeSchema(StrEnum):
 
 
 @dataclass
-class MarketByPrice1:
+class MarketByPrice1(BaseMarketData):
     # Timestamps
     ts_recv: int  # Capture server received timestamp expressed as the number of nanoseconds since the UNIX epoch.
     ts_event: int  # Matching engine received timestamp expressed as the number of nanoseconds since the UNIX epoch.
@@ -72,5 +73,11 @@ class MarketByPrice1:
     def to_dict(cls):
         pass
 
-    def table_name(self):
+    def db_table_name(self):
         return f"{self.asset_type}_{self.symbol}_{self.db_schema}_{self.vendor}"
+
+    def redis_name(self):
+        pass
+
+    def file_name(self):
+        pass
