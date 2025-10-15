@@ -11,7 +11,7 @@ class OHLCV1D(BaseMarketData):
     high: float
     low: float
     close: float
-    ts_event: int
+    ts_event: str
     volume: Optional[float] = None
     rtype: Optional[int] = None
     instrument_id: Optional[int] = None
@@ -29,7 +29,7 @@ class OHLCV1D(BaseMarketData):
         pass
 
     def redis_name(self):
-        return f"{self.data_schema}:{self.vendor}:{dt.datetime.fromtimestamp(self.ts_event).strftime("%Y-%m-%d")}:{self.symbol}"
+        return f"{self.data_schema}:{self.vendor}:{dt.datetime.fromisoformat(self.ts_event).strftime("%Y-%m-%d")}:{self.symbol}"
 
     def file_name(self):
         pass

@@ -9,7 +9,7 @@ from datacore.models.mktdata.schema import MktDataSchema
 @dataclass
 class MarketByPrice1(BaseMarketData):
     price: float
-    ts_event: int  # Capture server received timestamp expressed as the number of nanoseconds since the UNIX epoch.
+    ts_event: str  # Capture server received timestamp expressed as the number of nanoseconds since the UNIX epoch.
 
     ts_recv: Optional[int] = None  # Matching engine received timestamp expressed as the number of nanoseconds since the UNIX epoch.
     ts_in_delta: Optional[int] = None  # The matching-engine-sending timestamp expressed as the number of nanoseconds before ts_recv.
