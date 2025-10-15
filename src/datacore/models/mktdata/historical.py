@@ -16,7 +16,7 @@ class OHLCV1D(BaseMarketData):
     instrument_id: Optional[int] = None  # Numeric instrument ID.
     publisher_id: Optional[int] = None  # Publisher ID assigned by Databento, which denotes dataset and venue.
 
-    data_schema = MktDataSchema.OHLCV_1D
+    data_schema = MktDataSchema.OHLCV_1D.short_name()
 
     def from_dict(self, message: dict):
         pass
@@ -25,7 +25,7 @@ class OHLCV1D(BaseMarketData):
         pass
 
     def redis_name(self):
-        pass
+        return f"{self.data_schema}:{self.vendor}:{self.symbol}"
 
     def file_name(self):
         pass
