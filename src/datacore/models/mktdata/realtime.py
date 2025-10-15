@@ -1,6 +1,6 @@
 from enum import StrEnum
 from typing import Optional
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, fields, asdict
 
 from datacore.models.mktdata.base import BaseMarketData
 from datacore.models.assets import AssetType
@@ -70,7 +70,7 @@ class MarketByPrice1(BaseMarketData):
 
     @classmethod
     def to_dict(cls):
-        pass
+        return {k: v for k, v in asdict(self).items() if v is not None}
 
     def db_table_name(self):
         return f"{self.asset_type}_{self.symbol}_{self.db_schema}_{self.vendor}"
