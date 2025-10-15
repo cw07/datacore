@@ -11,6 +11,7 @@ class MktDataSchema(StrEnum):
     OHLCV_1M = "ohlcv-1m"
     OHLCV_1H = "ohlcv-1h"
     OHLCV_1D = "ohlcv-1d"
+    DEFINITION = "definition"
 
     def short_name(self) -> str:
         """Return enum value with underscores removed"""
