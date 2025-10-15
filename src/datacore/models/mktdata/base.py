@@ -1,15 +1,20 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, asdict
+
+from datacore.models.assets import AssetType
 
 
+@dataclass
 class BaseMarketData(ABC):
+    asset_type: AssetType
+    vendor: str
+    symbol: str
 
-    @abstractmethod
     def from_dict(self, message: dict):
         pass
 
-    @abstractmethod
     def to_dict(self) -> dict:
-        pass
+        return {k: v for k, v in asdict(self).items() if v is not None}
 
     @abstractmethod
     def db_table_name(self):

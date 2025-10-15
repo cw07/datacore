@@ -1,40 +1,17 @@
-from enum import StrEnum
 from typing import Optional
 from dataclasses import dataclass, fields, asdict
 
 from datacore.models.mktdata.base import BaseMarketData
-from datacore.models.assets import AssetType
 from datacore.models.order import OrderSide, OrderAction
-
-
-class RealtimeSchema(StrEnum):
-    MBO = "mbo"
-    MBP_1 = "mbp_1"
-    MBP_10 = "mbp_10"
-    TRADES = "trades"
-    """
-    Aggregate bars (OHLCV) provide open, high, low, and close prices and total volume
-    aggregated from trades at 1-second, 1-minute, 1-hour, or 1-day intervals.
-    """
-    OHLCV_1S = "ohlcv_1s"
-    OHLCV_1M = "ohlcv_1m"
-    OHLCV_1H = "ohlcv_1h"
-    OHLCV_1D = "ohlcv_1d"
-
-    def short_name(self) -> str:
-        """Return enum value with underscores removed"""
-        return self.value.replace("_", "")
+from datacore.models.mktdata.schema import MktDataSchema
 
 
 @dataclass
 class MarketByPrice1(BaseMarketData):
-    symbol: str  # Requested symbol for the instrument.
-    asset_type: AssetType
     price: int  # Order price expressed as a signed integer where every 1 unit corresponds to 1e-9.
-    ts_recv: int  # Capture server received timestamp expressed as the number of nanoseconds since the UNIX epoch.
-    vendor: str # Data vendor
+    ts_event: int  # Capture server received timestamp expressed as the number of nanoseconds since the UNIX epoch.
 
-    ts_event: Optional[int] = None  # Matching engine received timestamp expressed as the number of nanoseconds since the UNIX epoch.
+    ts_recv: Optional[int] = None  # Matching engine received timestamp expressed as the number of nanoseconds since the UNIX epoch.
     ts_in_delta: Optional[int] = None  # The matching-engine-sending timestamp expressed as the number of nanoseconds before ts_recv.
 
     # Order details
@@ -51,7 +28,7 @@ class MarketByPrice1(BaseMarketData):
     flags: Optional[int] = None  # A bit field indicating event end, message characteristics, and data quality.
     channel_id: Optional[int] = None  # The channel ID assigned by Databento as an incrementing integer starting at zero.
     depth: Optional[int] = None  # Book level where the update event occurred.
-    db_schema: str = RealtimeSchema.MBP_1.short_name()
+    data_schema: str = MktDataSchema.MBP_1.short_name()
 
     # Top-of-book state
     bid_px_00: Optional[float] = None  # Bid price at the top level.
@@ -72,10 +49,10 @@ class MarketByPrice1(BaseMarketData):
         return {k: v for k, v in asdict(self).items() if v is not None}
 
     def db_table_name(self):
-        return f"{self.asset_type}_{self.symbol}_{self.db_schema}_{self.vendor}"
+        return f"{self.asset_type}_{self.symbol}_{self.data_schema}_{self.vendor}"
 
     def redis_name(self):
-        return f"rt:onyx:{self.symbol}"
+        return f"rt:{self.vendor}:{self.symbol}"
 
     def file_name(self):
         pass
