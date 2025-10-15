@@ -78,7 +78,7 @@ class MarketByPrice1(BaseMarketData):
         return f"{self.asset_type}_{self.symbol}_{self.db_schema}_{self.vendor}"
 
     def redis_name(self):
-        pass
+        return f"rt:onyx:{self.symbol}"
 
     def file_name(self):
         pass
