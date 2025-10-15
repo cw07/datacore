@@ -29,7 +29,7 @@ class OHLCV1D(BaseMarketData):
         pass
 
     def redis_name(self):
-        return f"{self.data_schema}:{self.vendor}:{dt.datetime.fromisoformat(self.ts_event).strftime("%Y-%m-%d")}:{self.symbol}"
+        return f"{self.data_schema}:{self.vendor}:{self.symbol}"
 
     def file_name(self):
         pass
