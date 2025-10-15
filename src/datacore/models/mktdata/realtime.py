@@ -28,7 +28,6 @@ class MarketByPrice1(BaseMarketData):
     flags: Optional[int] = None  # A bit field indicating event end, message characteristics, and data quality.
     channel_id: Optional[int] = None  # The channel ID assigned by Databento as an incrementing integer starting at zero.
     depth: Optional[int] = None  # Book level where the update event occurred.
-    data_schema: str = MktDataSchema.MBP_1.short_name()
 
     # Top-of-book state
     bid_px_00: Optional[float] = None  # Bid price at the top level.
@@ -38,6 +37,8 @@ class MarketByPrice1(BaseMarketData):
     ask_px_00: Optional[float] = None  # Ask price at the top level.
     ask_sz_00: Optional[int] = None  # Ask size at the top level.
     ask_ct_00: Optional[int] = None  # Number of ask orders at the top level.
+
+    data_schema: str = MktDataSchema.MBP_1
 
     @classmethod
     def from_dict(cls, message: dict):
