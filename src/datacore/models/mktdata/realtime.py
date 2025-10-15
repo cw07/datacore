@@ -28,28 +28,27 @@ class RealtimeSchema(StrEnum):
 
 @dataclass
 class MarketByPrice1(BaseMarketData):
-    # Timestamps
-    ts_recv: int  # Capture server received timestamp expressed as the number of nanoseconds since the UNIX epoch.
-    ts_event: int  # Matching engine received timestamp expressed as the number of nanoseconds since the UNIX epoch.
-    ts_in_delta: int  # The matching-engine-sending timestamp expressed as the number of nanoseconds before ts_recv.
-
-    # Identifiers
-    instrument_id: int  # Numeric instrument ID.
-    asset_type: AssetType
     symbol: str  # Requested symbol for the instrument.
-    publisher_id: int  # Publisher ID assigned by Databento, which denotes dataset and venue.
-    rtype: int  # Record type. Each schema corresponds with a single rtype value.
-    sequence: int  # Message sequence number assigned at the venue.
+    asset_type: AssetType
+    price: int  # Order price expressed as a signed integer where every 1 unit corresponds to 1e-9.
+    ts_recv: int  # Capture server received timestamp expressed as the number of nanoseconds since the UNIX epoch.
+    vendor: str # Data vendor
+
+    ts_event: Optional[int] = None  # Matching engine received timestamp expressed as the number of nanoseconds since the UNIX epoch.
+    ts_in_delta: Optional[int] = None  # The matching-engine-sending timestamp expressed as the number of nanoseconds before ts_recv.
 
     # Order details
-    action: OrderAction  # Event action. Can be Add, Cancel, Modify, Clear book, or Trade.
-    side: OrderSide  # Side that initiates the event. Can be Ask for the sell aggressor in a trade, Bid for the buy aggressor in a trade, or None where no side is specified by the original trade or the record was not a trade.
-    price: int  # Order price expressed as a signed integer where every 1 unit corresponds to 1e-9.
-    size: int  # Order quantity.
+    action: Optional[OrderAction] = None  # Event action. Can be Add, Cancel, Modify, Clear book, or Trade.
+    side: Optional[OrderSide] = None  # Side that initiates the event. Can be Ask for the sell aggressor in a trade, Bid for the buy aggressor in a trade, or None where no side is specified by the original trade or the record was not a trade.
+    size: Optional[int] = None  # Order quantity.
 
     # Metadata
-    flags: int  # A bit field indicating event end, message characteristics, and data quality.
-    vendor: str # Data vendor
+    instrument_id: Optional[int] = None  # Numeric instrument ID.
+    publisher_id: Optional[int] = None  # Publisher ID assigned by Databento, which denotes dataset and venue.
+    rtype: Optional[int] = None  # Record type. Each schema corresponds with a single rtype value.
+    sequence: Optional[int] = None  # Message sequence number assigned at the venue.
+
+    flags: Optional[int] = None  # A bit field indicating event end, message characteristics, and data quality.
     channel_id: Optional[int] = None  # The channel ID assigned by Databento as an incrementing integer starting at zero.
     depth: Optional[int] = None  # Book level where the update event occurred.
     db_schema: str = RealtimeSchema.MBP_1.short_name()
@@ -58,11 +57,10 @@ class MarketByPrice1(BaseMarketData):
     bid_px_00: Optional[float] = None  # Bid price at the top level.
     bid_sz_00: Optional[int] = None  # Bid size at the top level.
     bid_ct_00: Optional[int] = None  # Number of bid orders at the top level.
-    mid_px_00: Optional[float] = None
+    mid_px_00: Optional[float] = None # Mid price at the top level
     ask_px_00: Optional[float] = None  # Ask price at the top level.
     ask_sz_00: Optional[int] = None  # Ask size at the top level.
     ask_ct_00: Optional[int] = None  # Number of ask orders at the top level.
-
 
     @classmethod
     def from_dict(cls, message: dict):
