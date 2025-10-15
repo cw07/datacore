@@ -52,7 +52,7 @@ class MarketByPrice1(BaseMarketData):
     vendor: str # Data vendor
     channel_id: Optional[int] = None  # The channel ID assigned by Databento as an incrementing integer starting at zero.
     depth: Optional[int] = None  # Book level where the update event occurred.
-    db_schema: str = RealtimeSchema.MBO.short_name()
+    db_schema: str = RealtimeSchema.MBP_1.short_name()
 
     # Top-of-book state
     bid_px_00: Optional[float] = None  # Bid price at the top level.
