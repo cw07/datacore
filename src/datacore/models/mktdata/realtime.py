@@ -68,8 +68,7 @@ class MarketByPrice1(BaseMarketData):
         filtered_data = {k: v for k, v in message.items() if k in field_names}
         return cls(**filtered_data)
 
-    @classmethod
-    def to_dict(cls):
+    def to_dict(self):
         return {k: v for k, v in asdict(self).items() if v is not None}
 
     def db_table_name(self):
