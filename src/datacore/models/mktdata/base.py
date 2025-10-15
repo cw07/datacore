@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, fields
 
 from datacore.models.assets import AssetType
 
@@ -27,3 +27,10 @@ class BaseMarketData(ABC):
     @abstractmethod
     def file_name(self):
         pass
+
+    def __repr__(self):
+        field_strs = []
+        for f in fields(self):
+            value = getattr(self, f.name)
+            field_strs.append(f"{f.name}={value!r}")
+        return f"{self.__class__.__name__}({', '.join(field_strs)})"
