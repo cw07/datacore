@@ -8,7 +8,7 @@ from datacore.models.mktdata.schema import MktDataSchema
 
 @dataclass
 class MarketByPrice1(BaseMarketData):
-    price: int  # Order price expressed as a signed integer where every 1 unit corresponds to 1e-9.
+    price: float
     ts_event: int  # Capture server received timestamp expressed as the number of nanoseconds since the UNIX epoch.
 
     ts_recv: Optional[int] = None  # Matching engine received timestamp expressed as the number of nanoseconds since the UNIX epoch.
