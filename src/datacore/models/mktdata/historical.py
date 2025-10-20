@@ -25,12 +25,6 @@ class OHLCV1D(BaseMarketData):
         if self.close is None and self.price is None:
             raise ValueError("At least one of 'close' or 'price' must be provided")
 
-    @classmethod
-    def from_dict(cls, message: dict):
-        field_names = {f.name for f in fields(cls)}
-        filtered_data = {k: v for k, v in message.items() if k in field_names}
-        return cls(**filtered_data)
-
     def db_table_name(self):
         pass
 

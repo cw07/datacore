@@ -10,8 +10,11 @@ class BaseMarketData(ABC):
     vendor: str
     symbol: str
 
-    def from_dict(self, message: dict):
-        pass
+    @classmethod
+    def from_dict(cls, message: dict):
+        field_names = {f.name for f in fields(cls)}
+        filtered_data = {k: v for k, v in message.items() if k in field_names}
+        return cls(**filtered_data)
 
     def to_dict(self) -> dict:
         return {k: v for k, v in asdict(self).items() if v is not None}
