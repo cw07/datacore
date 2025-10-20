@@ -4,6 +4,8 @@ from enum import StrEnum
 class AssetType(StrEnum):
     FX = "fx"
     FUT = "fut"
+    FWD = "fwd"
+    INDEX = "index"
     EQUITY = "equity"
     EQUITY_OPTION = "equityoption"
     FUT_OPTION = "futoption"
