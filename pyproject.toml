@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "datacore"
-version = "0.1.0"
+version = "0.1.1"
 description = "A core library for data models"
 authors = [
     {name = "cw"},
