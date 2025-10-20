@@ -1,23 +1,29 @@
 import datetime as dt
 from typing import Optional
 
-from dataclasses import dataclass,fields, asdict
+from dataclasses import dataclass,fields
 from datacore.models.mktdata.base import BaseMarketData
 from datacore.models.mktdata.schema import MktDataSchema
 
 @dataclass
 class OHLCV1D(BaseMarketData):
-    open: float
-    high: float
-    low: float
-    close: float
     ts_event: str
+
+    open: Optional[float] = None
+    high: Optional[float] = None
+    low: Optional[float] = None
+    close: Optional[float] = None
+    price: Optional[float] = None
     volume: Optional[float] = None
     rtype: Optional[int] = None
     instrument_id: Optional[int] = None
     publisher_id: Optional[int] = None
 
     data_schema = MktDataSchema.OHLCV_1D
+
+    def __post_init__(self):
+        if self.close is None and self.price is None:
+            raise ValueError("At least one of 'close' or 'price' must be provided")
 
     @classmethod
     def from_dict(cls, message: dict):
