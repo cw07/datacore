@@ -7,3 +7,4 @@ class DataSource(StrEnum):
     BBG = "bbg"
     Onyx = "onyx"
     Sparta = "sparta"
+    MarketDataDB = "mkt_db"
