@@ -40,11 +40,16 @@ class MarketByPrice1(BaseMarketData):
 
     data_schema: str = MktDataSchema.MBP_1
 
-    def to_dict(self):
-        return {k: v for k, v in asdict(self).items() if v is not None}
+    def to_dict_redis(self):
+        ignore_fields = {"vendor", "symbol", "data_schema"}
+        return {
+            k: str(v) if v is not None else ""
+            for k, v in asdict(self).items()
+            if k not in ignore_fields
+        }
 
     def db_table_name(self):
-        return f"{self.asset_type}_{self.symbol}_{self.data_schema}_{self.vendor}"
+        return f"{self.vendor}_{self.asset_type}_{self.symbol}_{self.data_schema}"
 
     def redis_name(self):
         return f"rt:{self.vendor}:{self.symbol}"

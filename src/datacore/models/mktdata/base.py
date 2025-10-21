@@ -6,6 +6,7 @@ from datacore.models.assets import AssetType
 
 @dataclass
 class BaseMarketData(ABC):
+    """Below fields are required to resolve redis key or table namee"""
     asset_type: AssetType
     vendor: str
     symbol: str
