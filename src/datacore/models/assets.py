@@ -9,7 +9,6 @@ class AssetType(StrEnum):
     EQUITY = "equity"
     EQUITY_OPTION = "equityoption"
     FUT_OPTION = "futoption"
-    INDEX = "index"
 
     def is_fx(self):
         pass
