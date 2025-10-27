@@ -26,7 +26,7 @@ class OHLCV1D(BaseMarketData):
             raise ValueError("At least one of 'close' or 'price' must be provided")
 
     def db_table_name(self):
-        pass
+        return f"{self.venue}_{self.vendor}_{self.data_schema}_{self.symbol}"
 
     def redis_name(self):
         return f"{self.data_schema}:{self.vendor}:{self.symbol}"
