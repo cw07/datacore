@@ -49,7 +49,7 @@ class MarketByPrice1(BaseMarketData):
         }
 
     def db_table_name(self):
-        return f"{self.vendor}_{self.asset_type}_{self.symbol}_{self.data_schema}"
+        return f"{self.venue}_{self.vendor}_{self.data_schema}_{self.symbol}"
 
     def redis_name(self):
         return f"rt:{self.vendor}:{self.symbol}"
