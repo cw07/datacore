@@ -28,7 +28,8 @@ class MktDataSchema(StrEnum):
             MktDataSchema.OHLCV_1S: Frequency.SEC_1,
             MktDataSchema.OHLCV_1M: Frequency.MIN_1,
             MktDataSchema.OHLCV_1H: Frequency.HOUR_1,
-            MktDataSchema.OHLCV_1D: Frequency.DAY_1
+            MktDataSchema.OHLCV_1D: Frequency.DAY_1,
+            MktDataSchema.OPTION_1D: Frequency.DAY_1
         }
         return frequency_map[self]
 
