@@ -33,3 +33,14 @@ class OHLCV1D(BaseMarketData):
 
     def file_name(self):
         pass
+
+
+@dataclass
+class Option1D:
+    market: str
+    date: str
+    contract: str
+    call_put: str
+    strike: float
+    settlement: float
+    last: Optional[float] = None
