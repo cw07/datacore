@@ -8,18 +8,8 @@ from datacore.models.assets.asset_type import AssetType
 class BaseMarketData(ABC):
     """Below fields are required to resolve redis key or table namee"""
     venue: str
-    asset_type: AssetType
     vendor: str
     symbol: str
-
-    @classmethod
-    def from_dict(cls, message: dict):
-        field_names = {f.name for f in fields(cls)}
-        filtered_data = {k: v for k, v in message.items() if k in field_names}
-        return cls(**filtered_data)
-
-    def to_dict(self) -> dict:
-        return {k: v for k, v in asdict(self).items() if v is not None}
 
     @abstractmethod
     def db_table_name(self):
@@ -32,6 +22,15 @@ class BaseMarketData(ABC):
     @abstractmethod
     def file_name(self):
         pass
+
+    @classmethod
+    def from_dict(cls, message: dict):
+        field_names = {f.name for f in fields(cls)}
+        filtered_data = {k: v for k, v in message.items() if k in field_names}
+        return cls(**filtered_data)
+
+    def to_dict(self) -> dict:
+        return {k: v for k, v in asdict(self).items() if v is not None}
 
     def __repr__(self):
         field_strs = []

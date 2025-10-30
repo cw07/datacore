@@ -3,9 +3,10 @@ from typing import Optional
 from zoneinfo import ZoneInfo
 from pydantic import BaseModel, Field, field_validator, computed_field, model_validator
 
-from datacore.models.assets.asset_type import AssetType, OptionType
 from datacore.models.mktdata.venue import Venue
 from datacore.utils.common import CONTRACT_MONTH_CODE
+from datacore.models.mktdata.base import BaseMarketData
+from datacore.models.assets.asset_type import AssetType, OptionType
 
 
 class BaseFutures(BaseModel):
@@ -89,6 +90,7 @@ class Futures(BaseModel):
     description: Optional[str] = None
     symbol: Optional[str] = None
     asset_type: AssetType = AssetType.FUT
+    mkt_data: Optional[BaseMarketData] = None
 
     @model_validator(mode="after")
     def set_venue_from_parent(self) -> 'Futures':
@@ -113,6 +115,7 @@ class FuturesOptions(BaseModel):
     venue: Optional[Venue] = None
     description: Optional[str] = None
     asset_type: AssetType = AssetType.FUT_OPTION
+    mkt_data: Optional[BaseMarketData] = None
 
     @model_validator(mode="after")
     def set_venue_from_parent(self) -> 'FuturesOptions':

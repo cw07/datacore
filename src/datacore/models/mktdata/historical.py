@@ -7,8 +7,8 @@ from datacore.models.mktdata.schema import MktDataSchema
 
 @dataclass
 class OHLCV1D(BaseMarketData):
-    ts_event: str
 
+    ts_event: str
     open: Optional[float] = None
     high: Optional[float] = None
     low: Optional[float] = None
@@ -36,7 +36,7 @@ class OHLCV1D(BaseMarketData):
 
 
 @dataclass
-class Option1D:
+class Option1D(BaseMarketData):
     market: str
     date: str
     contract: str
@@ -44,3 +44,12 @@ class Option1D:
     strike: float
     settlement: float
     last: Optional[float] = None
+
+    def db_table_name(self):
+        pass
+
+    def redis_name(self):
+        pass
+
+    def file_name(self):
+        pass
