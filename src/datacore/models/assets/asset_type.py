@@ -7,8 +7,9 @@ class AssetType(StrEnum):
     FWD = "fwd"
     INDEX = "index"
     EQUITY = "equity"
-    EQUITY_OPTION = "equityoption"
-    FUT_OPTION = "futoption"
+    ROLLING_FWD = "rolling_fwd"
+    EQUITY_OPTION = "equity_option"
+    FUT_OPTION = "fut_option"
 
     def is_fx(self):
         pass

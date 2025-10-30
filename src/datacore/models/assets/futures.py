@@ -83,6 +83,7 @@ class BaseFutures(BaseAsset):
 class Futures(BaseAsset):
     parent: BaseFutures
     term: int
+    expiry: Optional[dt.date] = None
     symbol: Optional[str] = None
     description: Optional[str] = None
     asset_type: AssetType = AssetType.FUT
