@@ -1,7 +1,7 @@
 from enum import StrEnum
 from abc import ABC
-from ...models.assets import AssetType
-from ...models.execution.algo import BaseExecutionAlgo
+from datacore.models.assets.asset_type import AssetType
+from datacore.models.execution.algo import BaseExecutionAlgo
 
 
 

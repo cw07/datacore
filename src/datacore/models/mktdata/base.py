@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, asdict, fields
 
-from datacore.models.assets import AssetType
+from datacore.models.assets.asset_type import AssetType
 
 
 @dataclass
