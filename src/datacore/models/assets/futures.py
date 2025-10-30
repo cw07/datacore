@@ -3,14 +3,14 @@ from typing import Optional
 from zoneinfo import ZoneInfo
 from pydantic import BaseModel, Field, field_validator, computed_field, model_validator
 
+from datacore.models.assets import BaseAsset
 from datacore.models.mktdata.venue import Venue
 from datacore.utils.common import CONTRACT_MONTH_CODE
 from datacore.models.mktdata.base import BaseMarketData
 from datacore.models.assets.asset_type import AssetType, OptionType
 
 
-class BaseFutures(BaseModel):
-    dflow_id: str
+class BaseFutures(BaseAsset):
     terms: int
     contract_size: int
     venue: Venue
@@ -83,8 +83,7 @@ class BaseFutures(BaseModel):
         return session_date.strftime("%Y-%m-%d")
 
 
-class Futures(BaseModel):
-    dflow_id: str
+class Futures(BaseAsset):
     parent: BaseFutures
     venue: Optional[Venue] = None
     description: Optional[str] = None
@@ -106,8 +105,7 @@ class Futures(BaseModel):
         return self.parent.trading_session
 
 
-class FuturesOptions(BaseModel):
-    dflow_id: str
+class FuturesOptions(BaseAsset):
     parent: Futures
     call_put: OptionType
     strike: float
