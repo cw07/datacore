@@ -42,24 +42,24 @@ class BaseFutures(BaseAsset):
         Uses string comparison to detect overnight sessions (e.g. '18:00:00' > '17:00:00').
         """
         now_local = dt.datetime.now(self.tz)
-        open_time = dt.datetime.strptime(self.hours.open_time_local[0], "%H:%M:%S").replace(tzinfo=self.tz)
+        open_time = dt.datetime.strptime(self.hours.open_time_local[0], "%H:%M:%S").time()
         trading_date = self.trading_session
 
         for open_t, close_t in zip(self.hours.open_time_local, self.hours.close_time_local):
-            open_dt = dt.datetime.strptime(open_t, "%H:%M:%S").replace(tzinfo=self.tz)
-            close_dt = dt.datetime.strptime(close_t, "%H:%M:%S").replace(tzinfo=self.tz)
+            open_dt = dt.datetime.strptime(open_t, "%H:%M:%S").time()
+            close_dt = dt.datetime.strptime(close_t, "%H:%M:%S").time()
 
             if close_dt < open_time:
                 close_date = trading_date + dt.timedelta(days=1)
             else:
                 close_date = trading_date
-            close_full = dt.datetime.combine(close_date, close_dt.time())
+            close_full = dt.datetime.combine(close_date, close_dt).replace(tzinfo=self.tz)
 
             if open_dt < open_time:
                 open_date = trading_date + dt.timedelta(days=1)
             else:
                 open_date = trading_date
-            open_full = dt.datetime.combine(open_date, open_dt.time())
+            open_full = dt.datetime.combine(open_date, open_dt).replace(tzinfo=self.tz)
 
             if open_full < now_local < close_full:
                 return True
