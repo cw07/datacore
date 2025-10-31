@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, asdict, fields
 
-from datacore.models.assets.asset_type import AssetType
-
 
 @dataclass
 class BaseMarketData(ABC):

@@ -12,6 +12,7 @@ class Forward(BaseAsset):
     venue: Venue
     expiry: dt.date
     hours: TradingHours
+    description: str = ""
     symbol: Optional[str] = None
     asset_type: AssetType = AssetType.FWD
     mkt_data: Optional[BaseMarketData] = None

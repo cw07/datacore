@@ -1,6 +1,6 @@
 import re
 from zoneinfo import ZoneInfo
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, model_validator
 
 
 class BaseAsset(BaseModel):
@@ -9,27 +9,20 @@ class BaseAsset(BaseModel):
 
 class TradingHours(BaseModel):
     time_zone: str  # valid str values are: 'America/New_York'
-    open_time_local: str # e.g. 'HH:MM:SS'
-    close_time_local: str # e.g. 'HH:MM:SS'
-    days: list[int] # list of integer from 0-6, maximum 7 days
-
-
-    @field_validator("time_zone")
-    @classmethod
-    def validate_time_zone(cls, v: str) -> str:
-        # Ensure it's a valid IANA time zone
-        try:
-            ZoneInfo(v)
-        except Exception:
-            raise ValueError(f"Invalid time zone: '{v}'. Must be a valid IANA zone like 'America/New_York'.")
-        return v
+    open_time_local: list[str]   # 'HH:MM:SS'
+    close_time_local: list[str]  # 'HH:MM:SS'
+    days: list[int] # days open, list of integer from 0-6, maximum 7 days
 
     @field_validator("open_time_local", "close_time_local")
     @classmethod
-    def validate_time_format(cls, v: str) -> str:
-        # Must match HH:MM:SS (00-23):(00-59):(00-59)
-        if not re.fullmatch(r"^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$", v):
-            raise ValueError(f"Invalid time format: '{v}'. Expected 'HH:MM:SS' (24-hour).")
+    def validate_time_format(cls, v: list[str]) -> list[str]:
+        """Validate each time string in the list matches HH:MM:SS format (24-hour)."""
+        pattern = r"^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$"
+        for time_str in v:
+            if not isinstance(time_str, str):
+                raise ValueError(f"Time must be a string, got {type(time_str).__name__}: {time_str}")
+            if not re.fullmatch(pattern, time_str):
+                raise ValueError(f"Invalid time format: '{time_str}'. Expected 'HH:MM:SS' (24-hour).")
         return v
 
     @field_validator("days")
@@ -41,3 +34,14 @@ class TradingHours(BaseModel):
         if len(v) > 7:
             raise ValueError("trading_days can contain at most 7 days.")
         return v
+
+    @model_validator(mode='after')
+    def validate_open_close_length_match(self):
+        """Ensure open_time_local and close_time_local have the same length."""
+        if len(self.open_time_local) != len(self.close_time_local):
+            raise ValueError(
+                f"open_time_local and close_time_local must have the same length. "
+                f"Got {len(self.open_time_local)} open times and {len(self.close_time_local)} close times."
+            )
+        return self
+

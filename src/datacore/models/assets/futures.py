@@ -16,7 +16,7 @@ class BaseFutures(BaseAsset):
     venue: Venue
     hours: TradingHours
     contract_months: list[str]
-    description: Optional[str] = None
+    description: str = ""
     category: Optional[str] = None
 
     @computed_field
@@ -32,52 +32,54 @@ class BaseFutures(BaseAsset):
     @computed_field
     @property
     def is_overnight(self) -> bool:
-        is_overnight = self.hours.open_time_local > self.hours.close_time_local
+        is_overnight = self.hours.open_time_local[0] > self.hours.close_time_local[-1]
         return is_overnight
 
     @property
-    def trading_session(self) -> str | None:
-        if not self.is_trading_now():
-            return None
-
-        now_local = dt.datetime.now(self.tz)
-        now_local_time_str = now_local.strftime("%H:%M:%S")
-
-        if not self.is_overnight:
-            session_date = now_local.date()
-        else:
-            if now_local_time_str >= self.hours.open_time_local:
-                session_date = now_local.date()
-            else:
-                session_date = (now_local - dt.timedelta(days=1)).date()
-
-        return session_date.strftime("%Y-%m-%d")
-
-    def is_trading_now(self) -> bool:
+    def is_open(self) -> bool:
         """
         Returns True if the market is currently trading.
         Uses string comparison to detect overnight sessions (e.g. '18:00:00' > '17:00:00').
         """
         now_local = dt.datetime.now(self.tz)
-        now_local_weekday = now_local.weekday()
-        now_local_time_str = now_local.strftime("%H:%M:%S")
+        open_time = dt.datetime.strptime(self.hours.open_time_local[0], "%H:%M:%S")
+        trading_date = self.trading_session
 
-        if not self.is_overnight:
-            if now_local_weekday not in self.trading_days:
-                return False
-            return self.hours.open_time_local <= now_local_time_str < self.hours.close_time_local
-        else:
-            if self.hours.open_time_local <= now_local_time_str:
-                # Session started today (e.g. 18:00–23:59)
-                session_start_weekday = now_local_weekday
-            elif now_local_time_str < self.hours.close_time_local:
-                # Session started yesterday (e.g. 00:00–17:00)
-                session_start_weekday = (now_local - dt.timedelta(days=1)).weekday()
+        for open_t, close_t in zip(self.hours.open_time_local, self.hours.close_time_local):
+            open_dt = dt.datetime.strptime(open_t, "%H:%M:%S")
+            close_dt = dt.datetime.strptime(close_t, "%H:%M:%S")
+
+            if close_dt < open_time:
+                close_date = trading_date + dt.timedelta(days=1)
             else:
-                # Time is in the gap: close_time <= now < open_time → market closed
-                return False
+                close_date = trading_date
+            close_full = dt.datetime.combine(close_date, close_dt.time())
 
-            return session_start_weekday in self.hours.days
+            if open_dt < open_time:
+                open_date = trading_date + dt.timedelta(days=1)
+            else:
+                open_date = trading_date
+            open_full = dt.datetime.combine(open_date, open_dt.time())
+
+            if open_full < now_local < close_full:
+                return True
+        return False
+
+    @property
+    def trading_session(self) -> dt.date:
+        now = dt.datetime.now()
+        now_hms = now.strftime("%H:%M:%S")
+        now_date = now.date()
+        first_open_time = self.hours.open_time_local[0]
+        if now_hms < first_open_time:
+            session_date = now_date - dt.timedelta(days=1)
+        else:
+            session_date = now_date
+
+        if session_date.weekday() not in self.hours.days:
+            while session_date.weekday() not in self.hours.days:
+                session_date = session_date - dt.timedelta(days=1)
+        return session_date
 
 
 class Futures(BaseAsset):
@@ -85,7 +87,7 @@ class Futures(BaseAsset):
     term: int
     expiry: Optional[dt.date] = None
     symbol: Optional[str] = None
-    description: Optional[str] = None
+    description: str = ""
     asset_type: AssetType = AssetType.FUT
     mkt_data: Optional[BaseMarketData] = None
 
@@ -98,19 +100,32 @@ class Futures(BaseAsset):
         return self.parent.contract_size
 
     @property
+    def hours(self) -> TradingHours:
+        return self.parent.hours
+
+    @property
+    def category(self) -> str:
+        return self.parent.category
+
+    @property
     def trading_session(self) -> str | None:
         return self.parent.trading_session
 
-    def is_trading_now(self) -> bool:
-        return self.parent.is_trading_now()
+    @property
+    def is_open(self) -> bool:
+        return self.parent.is_open
+
+    @model_validator(mode='after')
+    def resolve_description(self) -> 'Futures':
+        term_in_word = {1: "1st", 2: "2nd", 3: "3rd"}
+        self.description = term_in_word.get(self.term, str(self.term) + "th") + " " + self.parent.description
+        return self
 
 
 class FuturesOptions(BaseAsset):
     parent: Futures
-    call_put: OptionType
-    strike: float
-    expiry: dt.date
-    description: Optional[str] = None
+    term: int
+    description: str = ""
     asset_type: AssetType = AssetType.FUT_OPTION
     mkt_data: Optional[BaseMarketData] = None
 
@@ -126,8 +141,15 @@ class FuturesOptions(BaseAsset):
     def trading_session(self) -> str | None:
         return self.parent.trading_session
 
-    def is_trading_now(self) -> bool:
-        return self.parent.is_trading_now()
+    @property
+    def is_open(self) -> bool:
+        return self.parent.is_open
+
+    @model_validator(mode='after')
+    def resolve_description(self) -> 'FuturesOptions':
+        term_in_word = {1: "1st", 2: "2nd", 3: "3rd"}
+        self.description = self.parent.description + " Options"
+        return self
 
 
 if __name__ == "__main__":
@@ -136,8 +158,8 @@ if __name__ == "__main__":
                          contract_size=1000,
                          venue=Venue.CME,
                          hours=TradingHours(time_zone="America/New_York",
-                                            open_time_local="18:00:00",
-                                            close_time_local="17:00:00",
+                                            open_time_local=["18:00:00"],
+                                            close_time_local=["17:00:00"],
                                             days=[6, 0, 1, 2, 3, 4]
                                             ),
                          contract_months=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -152,9 +174,7 @@ if __name__ == "__main__":
     cme_cl_1_opt = FuturesOptions(dflow_id="12",
                                   parent=cme_cl_1,
                                   description="CME CL 1",
-                                  call_put=OptionType.Call,
-                                  strike=1000,
-                                  expiry=dt.date.today(),
+                                  term=1
                                   )
 
     print(cme_cl_1_opt)
