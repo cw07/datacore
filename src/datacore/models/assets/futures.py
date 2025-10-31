@@ -46,8 +46,8 @@ class BaseFutures(BaseAsset):
         trading_date = self.trading_session
 
         for open_t, close_t in zip(self.hours.open_time_local, self.hours.close_time_local):
-            open_dt = dt.datetime.strptime(open_t, "%H:%M:%S")
-            close_dt = dt.datetime.strptime(close_t, "%H:%M:%S")
+            open_dt = dt.datetime.strptime(open_t, "%H:%M:%S").replace(tzinfo=self.tz)
+            close_dt = dt.datetime.strptime(close_t, "%H:%M:%S").replace(tzinfo=self.tz)
 
             if close_dt < open_time:
                 close_date = trading_date + dt.timedelta(days=1)
@@ -67,7 +67,7 @@ class BaseFutures(BaseAsset):
 
     @property
     def trading_session(self) -> dt.date:
-        now = dt.datetime.now()
+        now = dt.datetime.now(self.tz)
         now_hms = now.strftime("%H:%M:%S")
         now_date = now.date()
         first_open_time = self.hours.open_time_local[0]
@@ -108,7 +108,7 @@ class Futures(BaseAsset):
         return self.parent.category
 
     @property
-    def trading_session(self) -> str | None:
+    def trading_session(self) -> dt.date:
         return self.parent.trading_session
 
     @property
@@ -138,7 +138,7 @@ class FuturesOptions(BaseAsset):
         return self.parent.contract_size
 
     @property
-    def trading_session(self) -> str | None:
+    def trading_session(self) -> dt.date:
         return self.parent.trading_session
 
     @property
@@ -147,7 +147,6 @@ class FuturesOptions(BaseAsset):
 
     @model_validator(mode='after')
     def resolve_description(self) -> 'FuturesOptions':
-        term_in_word = {1: "1st", 2: "2nd", 3: "3rd"}
         self.description = self.parent.description + " Options"
         return self
 
