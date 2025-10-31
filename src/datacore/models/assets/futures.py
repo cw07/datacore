@@ -42,7 +42,7 @@ class BaseFutures(BaseAsset):
         Uses string comparison to detect overnight sessions (e.g. '18:00:00' > '17:00:00').
         """
         now_local = dt.datetime.now(self.tz)
-        open_time = dt.datetime.strptime(self.hours.open_time_local[0], "%H:%M:%S")
+        open_time = dt.datetime.strptime(self.hours.open_time_local[0], "%H:%M:%S").replace(tzinfo=self.tz)
         trading_date = self.trading_session
 
         for open_t, close_t in zip(self.hours.open_time_local, self.hours.close_time_local):
@@ -176,6 +176,7 @@ if __name__ == "__main__":
                                   term=1
                                   )
 
+    print(cme_cl_1_opt.is_open)
     print(cme_cl_1_opt)
 
 
