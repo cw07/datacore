@@ -17,6 +17,7 @@ class BaseFutures(BaseAsset):
     hours: TradingHours
     contract_months: list[str]
     description: str = ""
+    asset_type: AssetType = AssetType.FUT
     category: Optional[str] = None
 
     @computed_field

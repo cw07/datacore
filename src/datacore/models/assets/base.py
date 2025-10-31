@@ -3,9 +3,12 @@ import datetime as dt
 from zoneinfo import ZoneInfo
 from pydantic import BaseModel, field_validator, model_validator, computed_field
 
+from datacore.models.assets.asset_type import AssetType
+
 
 class BaseAsset(BaseModel):
     dflow_id: str
+    asset_type: AssetType
 
     @property
     def is_open(self) -> bool:
