@@ -1,3 +1,6 @@
 pandas
-sqlalchemy[asyncio]
+sqlalchemy>=2.0.0
 aiodbc
+pydantic>=2.0.0
+pyyaml
+pyodbc

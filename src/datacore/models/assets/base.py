@@ -1,10 +1,19 @@
 import re
+import datetime as dt
 from zoneinfo import ZoneInfo
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, field_validator, model_validator, computed_field
 
 
 class BaseAsset(BaseModel):
     dflow_id: str
+
+    @property
+    def is_open(self) -> bool:
+        return self.hours.is_open
+
+    @property
+    def trading_session(self) -> dt.date:
+        return self.hours.trading_session
 
 
 class TradingHours(BaseModel):
@@ -14,7 +23,6 @@ class TradingHours(BaseModel):
     days: list[int] # days open, list of integer from 0-6, maximum 7 days
 
     @field_validator("open_time_local", "close_time_local")
-    @classmethod
     def validate_time_format(cls, v: list[str]) -> list[str]:
         """Validate each time string in the list matches HH:MM:SS format (24-hour)."""
         pattern = r"^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$"
@@ -26,7 +34,6 @@ class TradingHours(BaseModel):
         return v
 
     @field_validator("days")
-    @classmethod
     def validate_trading_days(cls, v: list[int]) -> list[int]:
         # Must contain integers between 0–6 (Monday–Sunday)
         if not all(isinstance(day, int) and 0 <= day <= 6 for day in v):
@@ -44,4 +51,55 @@ class TradingHours(BaseModel):
                 f"Got {len(self.open_time_local)} open times and {len(self.close_time_local)} close times."
             )
         return self
+
+    @computed_field
+    @property
+    def tz(self) -> ZoneInfo:
+        return ZoneInfo(self.time_zone)
+
+    @property
+    def is_open(self) -> bool:
+        """
+        Returns True if the market is currently trading.
+        Uses string comparison to detect overnight sessions (e.g. '18:00:00' > '17:00:00').
+        """
+        now_local = dt.datetime.now(self.tz)
+        open_time = dt.datetime.strptime(self.open_time_local[0], "%H:%M:%S").time()
+        trading_date = self.trading_session
+
+        for open_t, close_t in zip(self.open_time_local, self.close_time_local):
+            open_dt = dt.datetime.strptime(open_t, "%H:%M:%S").time()
+            close_dt = dt.datetime.strptime(close_t, "%H:%M:%S").time()
+
+            if close_dt < open_time:
+                close_date = trading_date + dt.timedelta(days=1)
+            else:
+                close_date = trading_date
+            close_full = dt.datetime.combine(close_date, close_dt).replace(tzinfo=self.tz)
+
+            if open_dt < open_time:
+                open_date = trading_date + dt.timedelta(days=1)
+            else:
+                open_date = trading_date
+            open_full = dt.datetime.combine(open_date, open_dt).replace(tzinfo=self.tz)
+
+            if open_full < now_local < close_full:
+                return True
+        return False
+
+    @property
+    def trading_session(self) -> dt.date:
+        now = dt.datetime.now(self.tz)
+        now_hms = now.strftime("%H:%M:%S")
+        now_date = now.date()
+        first_open_time = self.open_time_local[0]
+        if now_hms < first_open_time:
+            session_date = now_date - dt.timedelta(days=1)
+        else:
+            session_date = now_date
+
+        if session_date.weekday() not in self.days:
+            while session_date.weekday() not in self.days:
+                session_date = session_date - dt.timedelta(days=1)
+        return session_date
 

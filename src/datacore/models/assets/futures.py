@@ -26,61 +26,9 @@ class BaseFutures(BaseAsset):
 
     @computed_field
     @property
-    def tz(self) -> ZoneInfo:
-        return ZoneInfo(self.hours.time_zone)
-
-    @computed_field
-    @property
     def is_overnight(self) -> bool:
         is_overnight = self.hours.open_time_local[0] > self.hours.close_time_local[-1]
         return is_overnight
-
-    @property
-    def is_open(self) -> bool:
-        """
-        Returns True if the market is currently trading.
-        Uses string comparison to detect overnight sessions (e.g. '18:00:00' > '17:00:00').
-        """
-        now_local = dt.datetime.now(self.tz)
-        open_time = dt.datetime.strptime(self.hours.open_time_local[0], "%H:%M:%S").time()
-        trading_date = self.trading_session
-
-        for open_t, close_t in zip(self.hours.open_time_local, self.hours.close_time_local):
-            open_dt = dt.datetime.strptime(open_t, "%H:%M:%S").time()
-            close_dt = dt.datetime.strptime(close_t, "%H:%M:%S").time()
-
-            if close_dt < open_time:
-                close_date = trading_date + dt.timedelta(days=1)
-            else:
-                close_date = trading_date
-            close_full = dt.datetime.combine(close_date, close_dt).replace(tzinfo=self.tz)
-
-            if open_dt < open_time:
-                open_date = trading_date + dt.timedelta(days=1)
-            else:
-                open_date = trading_date
-            open_full = dt.datetime.combine(open_date, open_dt).replace(tzinfo=self.tz)
-
-            if open_full < now_local < close_full:
-                return True
-        return False
-
-    @property
-    def trading_session(self) -> dt.date:
-        now = dt.datetime.now(self.tz)
-        now_hms = now.strftime("%H:%M:%S")
-        now_date = now.date()
-        first_open_time = self.hours.open_time_local[0]
-        if now_hms < first_open_time:
-            session_date = now_date - dt.timedelta(days=1)
-        else:
-            session_date = now_date
-
-        if session_date.weekday() not in self.hours.days:
-            while session_date.weekday() not in self.hours.days:
-                session_date = session_date - dt.timedelta(days=1)
-        return session_date
-
 
 class Futures(BaseAsset):
     parent: BaseFutures
