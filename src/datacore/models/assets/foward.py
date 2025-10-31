@@ -10,8 +10,8 @@ from datacore.models.assets.base import BaseAsset, TradingHours
 class Forward(BaseAsset):
     contract_size: int
     venue: Venue
-    expiry: dt.date
     hours: TradingHours
+    expiry: Optional[dt.date] = None
     description: str = ""
     symbol: Optional[str] = None
     asset_type: AssetType = AssetType.FWD
